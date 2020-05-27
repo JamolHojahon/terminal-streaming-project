@@ -2,22 +2,30 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"log"
 	"net"
-	"terminal-streaming-project/config"
+	"os"
+
+	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func main() {
-	var (
-		configPath = flag.String("config", "./config.json", "path of the config file")
-	)
-	conf, err := config.FromFile(*configPath)
+	// var (
+	// 	configPath = flag.String("config", "./config.json", "path of the config file")
+	// )
+	// conf, err := config.FromFile(*configPath)
 
-	listener, err := net.Listen("tcp", conf.Service.Addr)
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
+	listener, err := net.Listen("tcp", "+"+port)
 	if err != nil {
 		log.Fatalf("can't listen: %v", err)
 	}
+	log.Println("RUNNIG NOW", port)
 	defer listener.Close()
 
 	for {
